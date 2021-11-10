@@ -6,9 +6,9 @@ target = input("Enter Domain Name ")
 
 decodedOutput = ''
 for x in recordTypes:
-	if decodedOutput == '':
-		decodedOutput = x + "\n" + subprocess.run(['dig ' + '+short ' + target + ' ' + x] , capture_output=True, shell=True).stdout.decode() + "\n"
-	else:
+	if subprocess.run(['dig ' + '+short ' + target + ' ' + x] , capture_output=True, shell=True).stdout.decode() == "" :
+		pass
+	else :	
 		decodedOutput += x + "\n" + subprocess.run(['dig ' + '+short ' + target + ' ' + x] , capture_output=True, shell=True).stdout.decode() + "\n"
 
 print(decodedOutput)
