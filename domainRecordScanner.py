@@ -1,8 +1,9 @@
+#Format: dig {target} {record type}
+
 #Import required modules
 import subprocess
 
-#Initialize array with record types to scan
-#Format: dig {target} {record type}
+#Initialize list with record types to scan
 recordTypes = ['A','AAAA','ALIAS','CNAME','MX','NS','PTR','SOA','SRV','TXT','DNSKEY','DS','NSEC','NSEC3','NSEC3PARAM','RRSIG','AFSDB','CAA','CERT','DHCID','DNAME','HINFO','HTTPS','LOC','NAPTR','RP','TLSA']
 
 #Save user input to target variable
