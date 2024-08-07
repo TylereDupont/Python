@@ -8,11 +8,17 @@ from reportlab.lib.colors import Color
 import io
 import concurrent.futures
 
+# Define default settings
+HEX_COLOR = "#333799"
+OPACITY = 0.1
+FONT = "IBM Plex Mono"
+FONT_SIZE = 10
+
 def hex_to_rgb(hex_color):
     hex_color = hex_color.lstrip('#')
     return tuple(int(hex_color[i:i+2], 16) / 255.0 for i in (0, 2, 4))
 
-def create_watermark(name, hex_color, opacity, font, font_size):
+def create_watermark(name, hex_color=HEX_COLOR, opacity=OPACITY, font=FONT, font_size=FONT_SIZE):
     packet = io.BytesIO()
     can = canvas.Canvas(packet, pagesize=letter)
     
@@ -35,7 +41,7 @@ def create_watermark(name, hex_color, opacity, font, font_size):
     can.rotate(45)
     
     # Draw the watermark text as vector graphics
-    watermark_text = f"NAME | Confidential | {name}"
+    watermark_text = f"APT - 0 | Confidential | {name}"
     text_object = can.beginText(0, 0)
     text_object.setTextOrigin(-can.stringWidth(watermark_text) / 2, 0)
     text_object.setFont(font, font_size)
@@ -47,7 +53,7 @@ def create_watermark(name, hex_color, opacity, font, font_size):
     packet.seek(0)
     return PdfReader(packet)
 
-def add_watermark(input_pdf_path, output_pdf_path, name, hex_color="#333799", opacity=0.1, font="IBM Plex Mono", font_size=10):
+def add_watermark(input_pdf_path, output_pdf_path, name, hex_color=HEX_COLOR, opacity=OPACITY, font=FONT, font_size=FONT_SIZE):
     input_pdf = PdfReader(input_pdf_path)
     watermark_pdf = create_watermark(name, hex_color, opacity, font, font_size)
     watermark_page = watermark_pdf.pages[0]
@@ -76,7 +82,7 @@ def add_watermark(input_pdf_path, output_pdf_path, name, hex_color="#333799", op
     with open(output_pdf_path, "wb") as output_pdf:
         pdf_writer.write(output_pdf)
 
-def process_pdf_for_name(pdf_path, name, output_folder):
+def process_pdf_for_name(pdf_path, name, output_folder, hex_color=HEX_COLOR, opacity=OPACITY, font=FONT, font_size=FONT_SIZE):
     # Determine relative path for output
     relative_path = os.path.relpath(pdf_path, 'input')
     output_dir = os.path.join(output_folder, name, os.path.dirname(relative_path))
@@ -84,9 +90,9 @@ def process_pdf_for_name(pdf_path, name, output_folder):
     
     output_pdf_path = os.path.join(output_dir, os.path.basename(pdf_path))
     print(f"Processing {pdf_path} for {name}...")
-    add_watermark(pdf_path, output_pdf_path, name)
+    add_watermark(pdf_path, output_pdf_path, name, hex_color, opacity, font, font_size)
 
-def process_pdfs(names_file, input_folder, output_folder):
+def process_pdfs(names_file, input_folder, output_folder, hex_color=HEX_COLOR, opacity=OPACITY, font=FONT, font_size=FONT_SIZE):
     with open(names_file, 'r') as f:
         names = [line.strip() for line in f]
 
@@ -100,7 +106,7 @@ def process_pdfs(names_file, input_folder, output_folder):
     with concurrent.futures.ThreadPoolExecutor() as executor:
         for name in names:
             for pdf_path in pdf_paths:
-                executor.submit(process_pdf_for_name, pdf_path, name, output_folder)
+                executor.submit(process_pdf_for_name, pdf_path, name, output_folder, hex_color, opacity, font, font_size)
 
 if __name__ == "__main__":
     names_file = "names.txt"  # File containing names
@@ -110,4 +116,10 @@ if __name__ == "__main__":
     # Ensure output directory exists
     os.makedirs(output_folder, exist_ok=True)
     
-    process_pdfs(names_file, input_folder, output_folder)
+    # Example of setting custom values
+    custom_hex_color = "#6E72D4"
+    custom_opacity = 0.15
+    custom_font = "IBM Plex Mono"
+    custom_font_size = 8
+    
+    process_pdfs(names_file, input_folder, output_folder, hex_color=custom_hex_color, opacity=custom_opacity, font=custom_font, font_size=custom_font_size)
