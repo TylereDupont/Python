@@ -35,7 +35,7 @@ def create_watermark(name, hex_color, opacity, font, font_size):
     can.rotate(45)
     
     # Draw the watermark text as vector graphics
-    watermark_text = f"APT - 0 | Confidential | {name}"
+    watermark_text = f"NAME | Confidential | {name}"
     text_object = can.beginText(0, 0)
     text_object.setTextOrigin(-can.stringWidth(watermark_text) / 2, 0)
     text_object.setFont(font, font_size)
